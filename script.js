@@ -98,7 +98,7 @@ const calcDisplayBalance = function (movements) {
 calcDisplayBalance(account1.movements);
 
 // //////////////////////////////////////////////////////
-// //////DISPLAY IN/OUT at the bottom of the page
+// //////DISPLAY IN/OUT/INTEREST at the bottom of the page
 const calcDisplaySummury = function (movements) {
   const income = movements
     .filter(mov => mov > 0)
@@ -109,6 +109,16 @@ const calcDisplaySummury = function (movements) {
     .filter(mov => mov < 0)
     .reduce((acc, mov) => acc + mov, 0);
   labelSumOut.textContent = `${Math.abs(outcome)}€`;
+
+  // interest is 1.2 at each income
+  const interest = movements
+    .filter(mov => mov > 0)
+    .map(mov => (mov * 1.2) / 100)
+    // excludes interests that are below 1€
+    .filter(interest => interest >= 1)
+    .reduce((acc, mov) => acc + mov, 0);
+  labelSumInterest.textContent = `${interest}€`;
+  console.log(interest);
 };
 calcDisplaySummury(account1.movements);
 
