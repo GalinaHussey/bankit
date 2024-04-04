@@ -86,7 +86,6 @@ const displayMovements = function (movements) {
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
 };
-displayMovements(account1.movements);
 
 // ////////////////////////////////////////////////////
 // ////////DISPLAY TOTAL BALANCE
@@ -95,32 +94,29 @@ const calcDisplayBalance = function (movements) {
   const balance = movements.reduce((acc, mov) => acc + mov, 0);
   labelBalance.textContent = `${balance}€`;
 };
-calcDisplayBalance(account1.movements);
 
 // //////////////////////////////////////////////////////
 // //////DISPLAY IN/OUT/INTEREST at the bottom of the page
-const calcDisplaySummury = function (movements) {
-  const income = movements
+const calcDisplaySummury = function (acc) {
+  const income = acc.movements
     .filter(mov => mov > 0)
     .reduce((acc, mov) => acc + mov, 0);
   labelSumIn.textContent = `${income}€`;
 
-  const outcome = movements
+  const outcome = acc.movements
     .filter(mov => mov < 0)
     .reduce((acc, mov) => acc + mov, 0);
   labelSumOut.textContent = `${Math.abs(outcome)}€`;
 
   // interest is 1.2 at each income
-  const interest = movements
+  const interest = acc.movements
     .filter(mov => mov > 0)
-    .map(mov => (mov * 1.2) / 100)
+    .map(mov => (mov * acc.interestRate) / 100)
     // excludes interests that are below 1€
     .filter(interest => interest >= 1)
     .reduce((acc, mov) => acc + mov, 0);
   labelSumInterest.textContent = `${interest}€`;
-  console.log(interest);
 };
-calcDisplaySummury(account1.movements);
 
 // /////////////////////////////////////////////////////
 // //// CREATES USERNAMES for each account
@@ -135,6 +131,51 @@ const createUserName = function (accs) {
   });
 };
 createUserName(accounts);
+
+// ////////////////////////////////////////////
+// ///Event handlers
+let currentAccount;
+btnLogin.addEventListener('click', function (e) {
+  // Prevents form from submitting
+  e.preventDefault();
+  // checks if username exists and if pin and username are from the same account
+  currentAccount = accounts.find(
+    acc => acc.username === inputLoginUsername.value
+  );
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    // Display UI and message
+    labelWelcome.textContent = `Welcome back, ${
+      currentAccount.owner.split(' ')[0]
+    }`;
+    containerApp.style.opacity = 100;
+    // Clear input fields
+    inputLoginUsername.value = inputLoginPin.value = '';
+    inputLoginPin.blur();
+
+    // Display movements
+    displayMovements(currentAccount.movements);
+
+    // Display balance
+    calcDisplayBalance(currentAccount.movements);
+
+    // Display summary
+    calcDisplaySummury(currentAccount);
+  }
+});
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 ///////////////////////////////////////
 // Coding Challenge #1
@@ -198,3 +239,25 @@ GOOD LUCK 😀
 
 // calcAverageHumanAge([5, 2, 4, 1, 15, 8, 3]);
 // calcAverageHumanAge([16, 6, 10, 5, 6, 1, 4]);
+
+///////////////////////////////////////
+// Coding Challenge #3
+
+/* 
+Rewrite the 'calcAverageHumanAge' function from the previous challenge, but this time as an arrow function, and using chaining!
+
+TEST DATA 1: [5, 2, 4, 1, 15, 8, 3]
+TEST DATA 2: [16, 6, 10, 5, 6, 1, 4]
+
+GOOD LUCK 😀
+*/
+
+// const calcAverageHumanAge = ages =>
+//   ages
+//     .map(age => (age <= 2 ? age * 2 : 16 + age * 4))
+//     .filter(humanAge => humanAge >= 18)
+//     .reduce((acc, dogAge, i, arr) => acc + dogAge / arr.length, 0);
+
+// const avg1 = calcAverageHumanAge([5, 2, 4, 1, 15, 8, 3]);
+// const avg2 = calcAverageHumanAge([16, 6, 10, 5, 6, 1, 4]);
+// console.log(avg1, avg2);
